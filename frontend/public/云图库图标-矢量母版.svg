@@ -1,0 +1,10 @@
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="1024" height="1024">
+  <rect width="1024" height="1024" fill="#ffffff" />
+  <g id="cloud-library" fill="none" stroke="#333333" stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
+    <path id="cloud" d="M336 856C201 856 96 753 96 624C96 504 180 413 280 408C303 290 403 192 512 192C619 192 713 269 744 392C857 383 928 491 928 616C928 745 823 856 696 856Z" />
+    <path id="rear-photo" d="M360 504L363 477C366 445 389 424 420 427L705 454C735 457 756 481 753 511L735 704C733 733 715 751 688 752" />
+    <rect id="front-photo" x="272" y="504" width="416" height="296" rx="52" />
+    <path id="mountains" d="M280 768L414 636L522 738L582 680L680 772" />
+    <circle id="sun" cx="572" cy="596" r="36" />
+  </g>
+</svg>

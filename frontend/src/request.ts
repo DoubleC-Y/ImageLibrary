@@ -3,7 +3,7 @@ import { message } from 'ant-design-vue'
 
 // 创建 Axios 实例
 const myAxios = axios.create({
-  baseURL: '',
+  baseURL: '/api',
   timeout: 60000,
   withCredentials: true,
 })
@@ -26,7 +26,6 @@ myAxios.interceptors.response.use(
     const { data } = response
     // 未登录
     if (data.code === 40100) {
-      // 不是获取用户信息的请求，并且用户目前不是已经在用户登录页面，则跳转到登录页面
       if (
         !response.request.responseURL.includes('user/get/login') &&
         !window.location.pathname.includes('/user/login')
@@ -35,11 +34,18 @@ myAxios.interceptors.response.use(
         window.location.href = `/user/login?redirect=${window.location.href}`
       }
     }
+    // 后端 Long 统一序列化成了字符串，把分页的数值字段还原成 number
+    if (data?.data && typeof data.data === 'object') {
+      const page = data.data
+      for (const key of ['total', 'current', 'size', 'pages'] as const) {
+        if (typeof page[key] === 'string') {
+          page[key] = Number(page[key])
+        }
+      }
+    }
     return response
   },
   function (error) {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    // Do something with response error
     return Promise.reject(error)
   },
 )

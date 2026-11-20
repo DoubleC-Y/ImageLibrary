@@ -1,9 +1,11 @@
 spring:
   application:
     name: background
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/image_library?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
 
 #MyBatis-Plus Config
 mybatis-plus:
@@ -42,3 +44,10 @@ knife4j:
 
 server:
   port: 8080
+  servlet:
+    session:
+      # 会话 30 分钟无操作即失效
+      timeout: 30m
+      cookie:
+        # 禁止 JS 读取 Cookie，降低 XSS 窃取会话的风险
+        http-only: true

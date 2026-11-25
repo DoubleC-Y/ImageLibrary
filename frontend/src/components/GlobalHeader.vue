@@ -20,15 +20,23 @@
     <a-col flex="120px">
       <div class="user-login-status">
         <div v-if="loginUserStore.loginUser.id">
-          <a-space :size="size">
-            <a-avatar shape="square" size="middle">
-              <template #icon><UserOutlined /></template>
-            </a-avatar>
-            {{ loginUserStore.loginUser.userName ?? '无名' }}
-          </a-space>
+          <a-dropdown>
+            <ASpace>
+              <a-avatar :src="loginUserStore.loginUser.userAvatar" />
+              {{ loginUserStore.loginUser.userName ?? '无名' }}
+            </ASpace>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item @click="doLogout">
+                  退出登录
+                  <LogoutOutlined />
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
         </div>
         <div v-else>
-          <a-button type="primary" href="/user/login">登录</a-button>
+          <a-button type="primary" @click="router.push('/user/login')">登录</a-button>
         </div>
       </div>
     </a-col>
@@ -38,30 +46,43 @@
 <script lang="ts" setup>
 import { h, ref } from 'vue'
 import { HomeOutlined } from '@ant-design/icons-vue'
-import type { MenuProps } from 'ant-design-vue'
+import { type MenuProps, message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
-import { UserOutlined } from '@ant-design/icons-vue'
 import { useLoginUserStore } from '@/stores/counter.ts'
+import { userControllerUserLogout } from '@/api/userController.ts'
 const loginUserStore = useLoginUserStore()
-const size = ref('small')
-const items = ref<MenuProps['items']>([
-  {
-    key: '/',
-    icon: () => h(HomeOutlined),
-    label: '主页',
-    title: '主页',
-  },
-  {
-    key: '/about',
-    label: '关于',
-    title: '关于',
-  },
+import { computed } from 'vue'
+
+const items = computed<MenuProps['items']>(() => [
+  { key: '/', icon: () => h(HomeOutlined), label: '主页', title: '主页' },
+  ...(loginUserStore.loginUser.userRole === 'admin'
+    ? [{ key: '/admin/userManage', label: '用户管理', title: '用户管理' }]
+    : []),
   {
     key: 'alipay',
     label: h('a', { href: 'https://antdv.com', target: '_blank' }, 'Ant Design Vue'),
     title: 'Ant Design Vue',
   },
 ])
+
+// 用户退出登录
+const doLogout = async () => {
+  try {
+    const res = await userControllerUserLogout()
+    if (res.data.code === 0) {
+      loginUserStore.setLoginUser({
+        userName: '未登录',
+      })
+      // 不要 await：message 的 Promise 会在提示框关闭后才 resolve，会阻塞跳转
+      message.success('退出登录成功')
+      router.push('/user/login')
+    } else {
+      message.error('退出登录失败，' + res.data.message)
+    }
+  } catch (e) {
+    message.error('退出登录失败，请稍后重试')
+  }
+}
 
 const router = useRouter()
 // 路由跳转事件
@@ -72,7 +93,7 @@ const doMenuClick = ({ key }: { key: string }) => {
 }
 
 const current = ref<string[]>([])
-router.afterEach((to, from, next) => {
+router.afterEach((to, from) => {
   current.value = [to.path]
 })
 </script>

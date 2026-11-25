@@ -1,15 +1,9 @@
 <template>
   <a-watermark content="水印">
-    <BasicLayout />
+    <router-view />
   </a-watermark>
 </template>
 
-<script setup lang="ts">
-import BasicLayout from '@/layouts/BasicLayout.vue'
-import { useLoginUserStore } from '@/stores/counter.ts'
-
-const loginUserStore = useLoginUserStore()
-loginUserStore.fetchLoginUser()
-</script>
+<script setup lang="ts"></script>
 
 <style scoped></style>
